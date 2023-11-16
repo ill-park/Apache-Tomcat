@@ -12,48 +12,47 @@ Apache와 Tomcat을 이용한 3Tier구조의 서버 구현에 대한 정보
 
 ---
 
-### Aapache workers, uri 등 properties 파일 수정 및 MOD_JK 설정
+## Aapache 파일 수정
 
-- worker 
-worker.list=lb,jkstatus
+### workers.properties
 
-worker.lmsJvm1.port={{port}}
-worker.lmsJvm1.host={{ip}}
-worker.lmsJvm1.type=ajp13
-worker.lmsJvm1.lbfactor=1
-worker.lmsJvm1.socket_timeout=300
-worker.lmsJvm1.retries=0
-worker.lmsJvm1.socket_keepalive=True
-worker.lmsJvm1.connection_pool_timeout=60
-worker.lmsJvm1.ping_mode=C,P
-worker.lmsJvm1.ping_timeout=100
-worker.lmsJvm1.connect_timeout=100
+worker.list=lb,jkstatus <br/>
+worker.lmsJvm1.port={{port}} <br/>
+worker.lmsJvm1.host={{ip}} <br/>
+worker.lmsJvm1.type=ajp13 <br/>
+worker.lmsJvm1.lbfactor=1 <br/>
+worker.lmsJvm1.socket_timeout=300 <br/>
+worker.lmsJvm1.retries=0 <br/>
+worker.lmsJvm1.socket_keepalive=True <br/>
+worker.lmsJvm1.connection_pool_timeout=60 <br/>
+worker.lmsJvm1.ping_mode=C,P <br/>
+worker.lmsJvm1.ping_timeout=100 <br/>
+worker.lmsJvm1.connect_timeout=100 <br/>
+ 
+worker.lb.type=lb <br/>
+worker.lb.balance_workers=lmsJvm1 <br/>
+worker.lb.sticky_session=1 <br/>
 
-worker.lb.type=lb
-worker.lb.balance_workers=lmsJvm1
-worker.lb.sticky_session=1
-
-worker.jkstatus.type=status
-worker.jkstatus.read_only=True
-worker.jkstatus.bad=s,e,r
-
----
-- uri example
-
-/jkstatus/*=jkstatus
-/*=lb
+worker.jkstatus.type=status <br/>
+worker.jkstatus.read_only=True <br/>
+worker.jkstatus.bad=s,e,r <br/>
 
 ---
+### uri.properties
 
-- mod_jk
+/jkstatus/*=jkstatus <br/>
+/*=lb <br/>
 
-LoadModule jk_module modules/mod_jk.so
+---
+### http.conf MOD_JK
 
-JkWorkersFile    conf/workers.properties
-JkLogFile "| /usr/local/apache2.4/bin/rotatelogs /usr/local/apache2.4/logs/mod_jk-%Y-%m-%d.log 86400"
-JkLogLevel info
-JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
-JkMountFile      conf/uri.properties
+LoadModule jk_module modules/mod_jk.so <br/>
+
+JkWorkersFile    conf/workers.properties <br/>
+JkLogFile "| /usr/local/apache2.4/bin/rotatelogs /usr/local/apache2.4/logs/mod_jk-%Y-%m-%d.log 86400" <br/>
+JkLogLevel info <br/> 
+JkLogStampFormat "[%a %b %d %H:%M:%S %Y] " <br/>
+JkMountFile      conf/uri.properties <br/>
 
 ### Aapache tomcat server.xml 구성
 <?xml version="1.0" encoding="UTF-8"?>
